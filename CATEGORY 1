@@ -1,0 +1,98 @@
+# This Python 3 environment comes with many helpful analytics libraries installed
+# It is defined by the kaggle/python Docker image: https://github.com/kaggle/docker-python
+# For example, here's several helpful packages to load
+
+import numpy as np # linear algebra
+import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
+
+# Input data files are available in the read-only "../input/" directory
+# For example, running this (by clicking run or pressing Shift+Enter) will list all files under the input directory
+
+import os
+for dirname, _, filenames in os.walk('/kaggle/input'):
+    for filename in filenames:
+        print(os.path.join(dirname, filename))
+
+# You can write up to 20GB to the current directory (/kaggle/working/) that gets preserved as output when you create a version using "Save & Run All" 
+# You can also write temporary files to /kaggle/temp/, but they won't be saved outside of the current session
+/kaggle/input/acm-sf-chapter-hackathon-small/popular_skus.csv
+/kaggle/input/acm-sf-chapter-hackathon-small/small_product_data.xml
+/kaggle/input/acm-sf-chapter-hackathon-small/train.csv
+/kaggle/input/acm-sf-chapter-hackathon-small/popular_skus.py
+/kaggle/input/acm-sf-chapter-hackathon-small/test.csv
+
+
+[2]
+train_data = pd.read_csv('/kaggle/input/acm-sf-chapter-hackathon-small/train.csv')
+test_data = pd.read_csv('/kaggle/input/acm-sf-chapter-hackathon-small/test.csv')
+
+[3]
+train_data
+
+
+[4]
+X = train_data.drop(['user', 'sku', 'category'],axis=1)
+y = train_data.sku
+
+
+[5]
+from datetime import datetime
+
+X.click_time = X[['click_time']].transform(lambda x: x + '.' + '0' * 6 if len(x) == 19  else x + (26 - len(x)) * '0')
+X.query_time = X[['query_time']].transform(lambda x: x + '.' + '0' * 6 if len(x) == 19  else x + (26 - len(x)) * '0')
+
+X = X.transform({'query': (lambda x: x.lower()), 'click_time':(lambda time: int(''.join(c for c in time if c.isdigit()))), \
+                'query_time': (lambda time: int(''.join(c for c in time if c.isdigit())))})
+
+[6]
+query_type = X['query'].unique()
+query_size = X['query'].nunique()
+query_dict = {query_type[i]: i for i in range(query_size)}
+query_dict['ncaa 2011']
+959
+
+[7]
+X = X.transform({'query': (lambda x: query_dict[x]), 'click_time': (lambda x: x), 'query_time' : (lambda x: x)})
+
+[8]
+X
+
+
+[9]
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=42)
+
+[10]
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import GridSearchCV
+from sklearn.neighbors import KNeighborsClassifier
+
+[11]
+clf_rf = RandomForestClassifier(n_estimators=20)
+
+[12]
+parameters = {'max_depth':range(9, 20, 2), 'min_samples_leaf': range(30, 101, 20), \
+             'min_samples_split':range(10, 101, 10)}
+grid_search_cv_clf = GridSearchCV(clf_rf, parameters, cv=5)
+grid_search_cv_clf.fit(X_train, y_train)
+/opt/conda/lib/python3.7/site-packages/sklearn/model_selection/_split.py:668: UserWarning: The least populated class in y has only 1 members, which is less than n_splits=5.
+  % (min_groups, self.n_splits)), UserWarning)
+
+GridSearchCV(cv=5, estimator=RandomForestClassifier(n_estimators=20),
+             param_grid={'max_depth': range(9, 20, 2),
+                         'min_samples_leaf': range(30, 101, 20),
+                         'min_samples_split': range(10, 101, 10)})
+
+[13]
+best_clf = grid_search_cv_clf.best_estimator_
+
+[14]
+y_pred = best_clf.predict(X_test)
+
+[15]
+best_clf.score(X_test, y_test)
+0.36716389728096677
+
+[16]
+output = pd.DataFrame({'Sku': y_pred})
+output.to_csv('sku_predict.csv', index=False)
