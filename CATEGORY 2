@@ -1,0 +1,92 @@
+import pygame
+import random
+pygame.init()
+score = 0
+player_x = 20 #player movment
+player_y = 200 #player movement
+y_change = 0 #player movemnt
+gravity = 1
+#active = True
+screen = pygame.display.set_mode((500,300)) #screen
+pygame.display.set_caption("Spider") #title
+fps = 50
+#obstacle_speed = 2
+x_change = 0 #player movement
+timer = pygame.time.Clock()
+background = (0, 0, 255)
+obstacle =(200,100,20)
+
+
+#game loop
+running = True
+while running:
+    timer.tick(fps)
+    screen.fill(background)
+    #sprites
+    floor = pygame.draw.rect(screen, (51,0,25),[0, 220, 1000, 100])
+    player = pygame.draw.rect(screen, (255,255,255),[player_x, player_y , 20, 20])
+    obstacle0 = pygame.draw.rect(screen, (0, 0, 0),[20, 30, 70, 20])
+    obstacle1 = pygame.draw.rect(screen, (0, 0, 0), [50, 130, 50, 20])
+    obstacle2 = pygame.draw.rect(screen, (0, 0, 0), [130, 170, 70, 20])
+    obstacle3 = pygame.draw.rect(screen, (0, 0, 0), [400, 70, 150, 20])
+    obstacle4 = pygame.draw.rect(screen, (0, 0, 0), [140, 100, 70, 20])
+    obstacle5 = pygame.draw.rect(screen, (0, 0, 0), [190, 50, 50, 20])
+    obstacle6 = pygame.draw.rect(screen, (0, 0, 0), [400, 170, 70, 20])
+    obstacle7 = pygame.draw.rect(screen, (0,0,0),[300,90,70,20])
+    obstacle8 = pygame.draw.rect(screen, (0,0,0),[330, 140,50,20])
+    obstacle9 = pygame.draw.rect(screen, (0, 0, 0), [350, 20, 50, 20])
+    obstacle10 = pygame.draw.rect(screen, (0,0,0), [250, 190, 70, 20])
+    Objective = pygame.draw.rect(screen,(51,0,0), [480,50,20,20])
+    Objective2 = pygame.draw.rect(screen, (0,100, 0), [484, 30, 15, 20])
+
+    if player.colliderect(obstacle0) or player.colliderect(obstacle1) or player.colliderect(obstacle2) or player.colliderect(obstacle3) or player.colliderect(obstacle4) or player.colliderect(obstacle5) or player.colliderect(obstacle6) or player.colliderect(obstacle7) or player.colliderect(obstacle8) or player.colliderect(obstacle9) or player.colliderect(obstacle10):
+        y_change = 0
+        x_change = 0
+
+
+
+
+
+# left and right movement
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+        if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE and y_change == 0:
+                    y_change = 10
+        if event.type == pygame.K_RIGHT:
+            x_change = 2
+        if event.type == pygame.K_LEFT:
+            x_change = -2
+
+        if event.type == pygame.KEYUP:
+             if event.key == pygame.K_d:
+                x_change = 3
+             if event.key == pygame.K_a:
+                x_change = -3
+
+
+
+    if 0 <= player_x <= 1000:
+        player_x += x_change
+    if player_x < 0:
+        player_x = 0
+    if player_x > 1000:
+        player_x = 1000
+
+    if y_change > 0 or player_y < 200:
+        player_y -= y_change
+        y_change -= gravity
+    if player_y > 200:
+        player_y = 200
+    if player_y == 200 and y_change < 0:
+        y_change = 0
+
+
+    pygame.display.update()
+    pygame.display.flip()
+pygame.quit()
+
+#Constants
+white = (255, 255, 255)
+Black = (0,0,0)
