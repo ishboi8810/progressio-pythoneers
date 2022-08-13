@@ -1,0 +1,41 @@
+QUESTION 1 
+T = int(input("Enter number of test cases"))
+i = 0
+while T > i:
+    if T < 1 or T > 1000:
+        print("Invalid input - Too many test cases")
+        break
+    X = int(input("How many rupees do you need to pay"))
+    if X < 1 or X > 1000:
+        print("Invalid input - You do not have that many rupees")
+        break
+    num_str = repr(X)
+    last_digit_str = num_str[-1]
+    last_digit = int(last_digit_str)
+    print("The minimum number of coins required is:", last_digit)
+    i += 1
+    
+    
+    
+CATEGORY 3
+T = int(input("How many Test cases?"))
+Range_1 = range(0, 1000)
+for x in range(T):
+    if T in Range_1:
+        for x in range(T):
+            X = int(input("Enter height A"))
+            Y = int(input("Enter height B"))
+            if X == Y:
+                print("both heights shouldn't the same")
+            if X < 100 or X > 200 or Y < 100 or Y > 200:
+                print("Height cannot be lesser than 100cm and greater than 200cm")
+                break
+            if X > Y:
+                print("A")
+                break
+            else:
+                print("B")
+                break
+
+    else :
+        print(T, 'is not present in the range.')
